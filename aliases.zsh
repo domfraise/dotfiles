@@ -1,53 +1,94 @@
 # Shortcuts
-alias copyssh="pbcopy < $HOME/.ssh/id_ed25519.pub"
-alias reloadshell="source $HOME/.zshrc"
-alias reloaddns="dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
-alias ll="/opt/homebrew/opt/coreutils/libexec/gnubin/ls -AhlFo --color --group-directories-first"
-alias phpstorm='open -a /Applications/PhpStorm.app "`pwd`"'
-alias shrug="echo '¯\_(ツ)_/¯' | pbcopy"
-alias compile="commit 'compile'"
-alias version="commit 'version'"
 
-# Directories
-alias dotfiles="cd $DOTFILES"
-alias library="cd $HOME/Library"
-alias projects="cd $HOME/Code"
-alias sites="cd $HOME/Herd"
 
-# Laravel
-alias a="php artisan"
-alias fresh="php artisan migrate:fresh --seed"
-alias tinker="php artisan tinker"
-alias seed="php artisan db:seed"
-alias serve="php artisan serve"
+alias less="bat"
+alias ls="lsd"
 
-# PHP
-alias cfresh="rm -rf vendor/ composer.lock && composer i"
+#git
 
-# JS
-alias nfresh="rm -rf node_modules/ package-lock.json && npm install"
-alias watch="npm run watch"
-
-# Docker
-alias docker-composer="docker-compose"
-
-# SQL Server
-alias mssql="docker run -e ACCEPT_EULA=Y -e SA_PASSWORD=LaravelWow1986! -p 1433:1433 mcr.microsoft.com/mssql/server:2017-latest"
-
-# Git
-alias gst="git status"
-alias gb="git branch"
+alias gs="git stash"
+alias gsp="git stash pop"
+alias gp="git pull"
 alias gc="git checkout"
-alias gl="git log --oneline --decorate --color"
-alias amend="git add . && git commit --amend --no-edit"
-alias commit="git add . && git commit -m"
-alias diff="git diff"
-alias force="git push --force"
-alias nuke="git clean -df && git reset --hard"
-alias pop="git stash pop"
-alias pull="git pull"
-alias push="git push"
-alias resolve="git add . && git commit --no-edit"
-alias stash="git stash -u"
-alias unstage="git restore --staged ."
-alias wip="commit wip"
+alias gcb="git checkout -b"
+
+main_branch (){
+  branch=$(git symbolic-ref refs/remotes/origin/HEAD | cut -d'/' -f4)
+  echo $branch
+}
+
+smp (){
+  git stash
+  git checkout $(main_branch)
+  git pull
+}
+
+smpp (){
+  smp
+  git stash pop
+}
+
+gmm (){
+  git checkout $(main_branch)
+  git pull
+  git checkout master
+  git checkout -
+  git merge $(main_branch)
+}
+
+alias nb="smp && gcb"
+alias nba="smap && gcb"
+
+#github cli
+get_ticket (){
+  t=$(git rev-parse --abbrev-ref HEAD | tr "-" " " | awk '{print "["$1 "-" $2"]" }')
+  echo $t
+}
+
+get_title (){
+  title=$(git rev-parse --abbrev-ref HEAD | cut -d "-" -f 3- | tr "-" " ")
+  echo $title
+}
+get_pr_title (){
+  echo "$(get_ticket) $(get_title)"
+}
+get_current_branch (){
+  echo $(git rev-parse --abbrev-ref HEAD)
+}
+get_pr_body (){
+  commits="$(git log --pretty=format:%s --reverse origin/$(main_branch)..$(get_current_branch) | tr '\n' '\v') "
+  cat ~/pr-template.txt | sed "s/CONTEXT/$commits/" | tr '\v' '\n'
+
+}
+
+create_pr() {
+  get_pr_body > ~/pr-filled.txt
+  gh pr create --title "$(get_pr_title)" --body-file ~/pr-filled.txt  --web
+}
+alias pr="create_pr"
+
+#jira cli
+export JIRA_API_TOKEN=h404b1OCwzvWpMRDUVPu680F
+alias ticket='jira issue list -s"In Progress" -a"Dominic Fraise" -t~"Epic" --columns key,summary --no-headers --plain'
+alias tick='ticket | tee /dev/tty | tr "\t" " "|cut -d " " -f1 | pbcopy'
+
+#daily summary
+alias sup="/Users/Dominic.Fraise/dev/apps/daily-summary/summary.sh"
+alias ghs="cd /Users/Dominic.Fraise/dev/apps/daily-summary/ && pipenv run python /Users/Dominic.Fraise/dev/apps/daily-summary/github-summary.py && cd -"
+
+export PATH="$PATH":"$HOME/dev/apps/"
+##Firebase Flutter fire (souschef)
+export PATH="$PATH":"$HOME/.pub-cache/bin"
+export FLUTTER_ROOT="/usr/local/Caskroom/flutter/2.5.3/"
+#
+# IDEA Scripts
+export PATH="$PATH":"$HOME/dev/scripts/idea"
+
+alias ideao="idea ./"
+
+eval $(thefuck --alias)
+
+
+alias prt="cat ~/pr-template.txt | pbcopy"
+alias ss="prt && gt ss"
+
