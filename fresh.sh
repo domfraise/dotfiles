@@ -1,4 +1,6 @@
 #!/bin/sh
+set -e
+export NONINTERACTIVE=1
 
 echo "Setting up your Mac..."
 
@@ -25,6 +27,19 @@ brew update
 # Install all our dependencies with bundle (See Brewfile)
 brew tap homebrew/bundle
 brew bundle --file ./Brewfile
+
+echo Ensure there is a zsh profile before installing SDKMAN or NVM
+touch ~/.zshrc
+
+echo Installing SDKMAN
+curl -s "https://get.sdkman.io" | bash
+
+source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+echo Installing some Java SDKs
+
+sdk install java 17.0.6-zulu
+
 
 # Set default MySQL root password and auth type
 mysql -u root -e "ALTER USER root@localhost IDENTIFIED WITH mysql_native_password BY 'password'; FLUSH PRIVILEGES;"
