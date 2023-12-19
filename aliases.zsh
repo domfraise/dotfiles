@@ -68,7 +68,7 @@ create_pr() {
 alias pr="create_pr"
 
 #jira cli
-export JIRA_API_TOKEN=h404b1OCwzvWpMRDUVPu680F
+export JIRA_API_TOKEN=
 alias ticket='jira issue list -s"In Progress" -a"Dominic Fraise" -t~"Epic" --columns key,summary --no-headers --plain'
 alias tick='ticket | tee /dev/tty | tr "\t" " "|cut -d " " -f1 | pbcopy'
 
@@ -85,9 +85,6 @@ export FLUTTER_ROOT="/usr/local/Caskroom/flutter/2.5.3/"
 export PATH="$PATH":"$HOME/dev/scripts/idea"
 
 alias ideao="idea ./"
-
-eval $(thefuck --alias)
-
 
 alias prt="cat ~/pr-template.txt | pbcopy"
 alias ss="prt && gt ss"

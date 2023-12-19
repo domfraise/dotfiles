@@ -18,8 +18,10 @@ if test ! $(which brew); then
 fi
 
 # Removes .zshrc from $HOME (if it exists) and symlinks the .zshrc file from the .dotfiles
-rm -rf $HOME/.zshrc
-ln -s .zshrc $HOME/.zshrc
+
+cp ./keymaps.vim ~/
+cp ./mackup.cfg ~/
+
 
 # Update Homebrew recipes
 brew update
@@ -40,23 +42,10 @@ echo Installing some Java SDKs
 
 sdk install java 17.0.6-zulu
 
-
-# Set default MySQL root password and auth type
-mysql -u root -e "ALTER USER root@localhost IDENTIFIED WITH mysql_native_password BY 'password'; FLUSH PRIVILEGES;"
-
-# Create a projects directories
-mkdir $HOME/Code
-mkdir $HOME/Herd
-
-# Create Code subdirectories
-mkdir $HOME/Code/blade-ui-kit
-mkdir $HOME/Code/laravel
-
-# Clone Github repositories
-./clone.sh
-
 # Symlink the Mackup config file to the home directory
 ln -s ./.mackup.cfg $HOME/.mackup.cfg
 
 # Set macOS preferences - we will run this last because this will reload the shell
 source ./.macos
+
+echo 'Now install googleDrive and run mackup restore'
